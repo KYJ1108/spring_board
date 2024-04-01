@@ -26,7 +26,7 @@ public class ArticleController { // Model + Controller
 
     @RequestMapping("/detail")
     @ResponseBody
-    public String detail(@RequestParam("articleId") int articleId) {
+    public String detail(@RequestParam("articleId") int articleId, Model model) {
 
         Article article = articleRepository.findArticleById(articleId);
 
@@ -36,16 +36,18 @@ public class ArticleController { // Model + Controller
 
         article.increaseHit();
 
-        String jsonString = "";
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            jsonString = objectMapper.writeValueAsString(article);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return jsonString;
+//        String jsonString = "";
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            jsonString = objectMapper.writeValueAsString(article);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return jsonString;
+        model.addAttribute("article", article);
+        return "detail";
     }
 
     @RequestMapping("/delete")
@@ -82,18 +84,27 @@ public class ArticleController { // Model + Controller
     @RequestMapping("/list")
     public String list(Model model) {
 
-        ArrayList<Article> articleList = articleRepository.findAll();
-        model.addAttribute("articleList", articleList);
+//        ArrayList<Article> articleList = articleRepository.findAll();
+//        model.addAttribute("articleList", articleList);
 
-        return "list";
+        return "redirect:/list";
     }
 
     @RequestMapping("/add")
     @ResponseBody
     public String add(@RequestParam("title") String title,
-                      @RequestParam("body") String body) {
+                      @RequestParam("body") String body, Model model) {
 
         articleRepository.saveArticle(title, body);
-        return "게시물이 등록되었습니다.";
+
+        ArrayList<Article> articleList = articleRepository.findAll();
+
+        model.addAttribute("articleList", articleList);
+        return "list";
+    }
+
+    @RequestMapping("form")
+    public  String form(){
+        return "form";
     }
 }
